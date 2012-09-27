@@ -16,6 +16,11 @@ Because one can send signals to processes and make them exit abnormally, this ca
 5) Sending variable length message structs :
 I figured since I'm using c++ I may as well template this out, so I created a MessageQueueClient class that handles the sending/receiving of messages to a message queue. This class takes care of attaching to a queue as well as handling any exceptions that can be thrown due to queues not existing or what not.
 
+======================================================
+If a run is aborted (due to hanging or bad inputs)
+kill -15 the affected processes
+This will delete the message queues so future runs won't be affected
+
 ======== Compile =========
 `make`
 

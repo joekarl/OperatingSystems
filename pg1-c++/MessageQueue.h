@@ -1,3 +1,5 @@
+
+//Class to handle the initialization/destruction of posix message queues
 class MessageQueue {
   int _queueKey;
   int _messageQueueId;

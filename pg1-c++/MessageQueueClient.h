@@ -55,7 +55,7 @@ class MessageQueueClient
 
     //Put a message in this message queue with the message type of fromAgentId
     //So that the receiver can get messages from specific agents
-    void sendMessage(T message, long fromAgentId) throw(QueueConnectionException)
+    void sendMessage(const T & message, long fromAgentId) throw(QueueConnectionException)
     {
       if (_message_queue_id == -1)
       {

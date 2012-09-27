@@ -14,7 +14,7 @@ using namespace std;
 
 MessageQueue* msgQ = NULL; 
 
-enum AgentStatus { NOT_INITIALIZED, INITIALIZED, STABILIZED, OK_TO_DISCONNECT };
+enum AgentStatus {INITIALIZED, STABILIZED };
 
 typedef struct 
 {
@@ -59,7 +59,7 @@ void registerSignalHandlers()
 
 void print_usage()
 {
-  cout << "Usage -- agent <initial_temperature> <id> <neighbor_1_id> <neighbor_2_id>" << endl;
+  cout << "Usage -- agent <initial_temperature> <id> <n1Id> <n2Id>" << endl;
 }
 
 int main(int argc, char ** argv) {
@@ -70,12 +70,12 @@ int main(int argc, char ** argv) {
     return 1;
   }
 
-  int initial_temperature, id, neighbor_1_id, neighbor_2_id;
+  int initial_temperature, id, n1Id, n2Id;
   
   int* arg_order[EXPECTED_ARGS_NUM] = {&initial_temperature, 
                        &id, 
-                       &neighbor_1_id, 
-                       &neighbor_2_id};
+                       &n1Id, 
+                       &n2Id};
   char* arg_tail;
 
   int i = 0;
@@ -102,8 +102,8 @@ int main(int argc, char ** argv) {
 
   //create message queue clients
   MessageQueueClient<StatusMessage> agentStatusQ(id);
-  MessageQueueClient<StatusMessage> n1StatusQ(neighbor_1_id);
-  MessageQueueClient<StatusMessage> n2StatusQ(neighbor_2_id);
+  MessageQueueClient<StatusMessage> n1StatusQ(n1Id);
+  MessageQueueClient<StatusMessage> n2StatusQ(n2Id);
 
   //wait for queues to come online....
   agentStatusQ.attachToQueue(-1);
@@ -115,22 +115,20 @@ int main(int argc, char ** argv) {
   StatusMessage n1Status = {INITIALIZED, currentTemperature};
   StatusMessage n2Status = n1Status;
   
+  //Send initial status and temperatur to neighbors
   StatusMessage agentStatus = {INITIALIZED, currentTemperature};
-  agentStatus = (StatusMessage) {INITIALIZED, currentTemperature};
   n1StatusQ.sendMessage(agentStatus, id);
-  //cout << id <<": done sending status to neighbor 1 : errno " << errno << endl;
   n2StatusQ.sendMessage(agentStatus, id);
-  //cout << id <<": done sending status to neighbor 2 : errno " << errno << endl;
   
 
   while (!stabilized)
   {
     if (n1Status.status != STABILIZED)
     {
+      //read from neighbor 1
       try
       {
-        //cout << id <<": going to read status from n1" << endl;
-        n1Status = agentStatusQ.readMessage(neighbor_1_id, true); 
+        n1Status = agentStatusQ.readMessage(n1Id, false); 
       } catch (QueueConnectionException qce)
       {
         cout << id << ": qce exception" << endl;
@@ -139,20 +137,22 @@ int main(int argc, char ** argv) {
 
     if (n2Status.status != STABILIZED)
     {
+      //read from neighbor 2
       try
       {
-        //cout << id <<": going to read status from n2" << endl;
-        n2Status = agentStatusQ.readMessage(neighbor_2_id, true); 
+        n2Status = agentStatusQ.readMessage(n2Id, false); 
       } catch (QueueConnectionException qce)
       {
         cout << id << ": qce exception" << endl;
       }
     }
   
-     
+    //Calculate new temperature 
     float newTemperature = currentTemperature 
                            + (0.33 * (n1Status.temperature - currentTemperature))
                            + (0.33 * (n2Status.temperature - currentTemperature));
+
+    //calculate how stable the temp is
     float temperatureStabilization = fabs(newTemperature - currentTemperature);
     
     cout << id << ": temp was " << currentTemperature << " and will be set to " << newTemperature << endl;
@@ -160,6 +160,7 @@ int main(int argc, char ** argv) {
     
     if (temperatureStabilization < TEMP_THRESHOLD)
     {
+      //we've reached a stabil temperature, carry on
       stabilized = true;
     }
     
@@ -177,6 +178,8 @@ int main(int argc, char ** argv) {
     usleep(SLEEP_TIME); 
   }
 
+  //Try to send messages to neighbors indicating stabilization
+  //This may fail as the neighbor may have already shutdown its message queue
   agentStatus = (StatusMessage) {STABILIZED, currentTemperature};
   try
   {

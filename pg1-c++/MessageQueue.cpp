@@ -10,7 +10,6 @@ MessageQueue::MessageQueue(int queueKey):_queueKey(queueKey) {
   _messageQueueId = msgget(_queueKey, IPC_CREAT | IPC_EXCL | 0400 | 0200);
   if (_messageQueueId == -1)
   {
-    //cout << "Destroying previously created queue with id " << _queueKey << endl;
     //Failed to create queue in exclusive mode so delete the original queue and try again....
     msgctl(
       msgget(_queueKey, IPC_NOWAIT), 
