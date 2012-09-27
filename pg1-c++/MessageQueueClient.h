@@ -61,7 +61,7 @@ class MessageQueueClient
       {
         attachToQueue(-1);
       }
-      struct message_queue_client_struct<T> msg = {fromAgentId, message};
+      message_queue_client_struct<T> msg = {fromAgentId, message};
       int snd_return = -1;
       int flags = 0;
       snd_return = msgsnd(_message_queue_id, &msg, sizeof_message_queue_client_struct<T>(), flags);
@@ -83,7 +83,7 @@ class MessageQueueClient
       {
         attachToQueue(-1);
       }
-      struct message_queue_client_struct<T> msg;
+      message_queue_client_struct<T> msg;
       int rcv_return = -1;
       int flags = 0;
       if (noWait)
