@@ -1,5 +1,7 @@
 Programming assignment #1
 
+Agent Range 561-580
+
 Problems I had to overcome
 1) Missing neighbors on initialization :
 Because neighbor queues might not be initialized by the time the agent is initialized, we block until we get a connection to each of the neighbor queues. This way we don't have to worry about them not existing at program start.
