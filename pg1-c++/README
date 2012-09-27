@@ -1,11 +1,29 @@
 Programming assignment #1
 
+Problems I had to overcome
+1) Missing neighbors on initialization :
+Because neighbor queues might not be initialized by the time the agent is initialized, we block until we get a connection to each of the neighbor queues. This way we don't have to worry about them not existing at program start.
+
+2) Blocking neighbors after stabilization and dropout of an agent :
+Because agents will drop out and delete their queues once they have stabilized, we must indicate to their neighbors that they are no longer available. So we send a message indicating that they are stabilized and we do not attempt to read from their queues again, from then on we just use their stabilized value.
+
+3) Missing neighbors on stabilization messages : 
+In line with problem #2, by the time we are going to send a message indicating that this agent is stabilized, one or both of the agent's neighbors may not exist. We just allow this to fail because if the neighbor doesn't exist anymore, then we don't need to notify it that this agent has stabilized.
+
+4) Pre-mature process exit :
+Because one can send signals to processes and make them exit abnormally, this can cause a leak of the message queue resource. So I trap the common use initiated signals and release the message queue resource on exit.
+
+5) Sending variable length message structs :
+I figured since I'm using c++ I may as well template this out, so I created a MessageQueueClient class that handles the sending/receiving of messages to a message queue. This class takes care of attaching to a queue as well as handling any exceptions that can be thrown due to queues not existing or what not.
 
 ======== Compile =========
 `make`
 
-======== Run =========
-`./agent`
+======== Run an agent =========
+`./agent <temp> <id> <n1 id> <n2 id>`
+
+======== Test run with 6 agents (see run.sh) =========
+`sh test.sh`
 
 ======== Clean ========
 `make clean`

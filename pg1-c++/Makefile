@@ -1,23 +1,31 @@
-PROJ = test
+PROJ = agent 
 BUILD_DIR = build
-OBJS = test.o \
-	testClass.o 
+SRCS = main.cpp \
+	MessageQueue.cpp
+OBJS = $(SRCS:.cpp=.o)
 BUILD_OBJS = $(addprefix $(BUILD_DIR)/,$(OBJS))
-SRCS = $(OBJS,.o=.cpp)
+
 CC = g++
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall -Werror -O3
 LD = g++
 LDFLAGS = 
 
-$(PROJ) : $(BUILD_OBJS)
-	@echo "Linking $(PROJ)"
+$(PROJ) : createBuildDir $(BUILD_OBJS)
+	@echo "Linking application $(PROJ)"
 	$(LD) -o $(PROJ) $(BUILD_OBJS) $(LDFLAGS)
 
-clean : 
-	rm -rf $(BUILD_DIR)
+createBuildDir :
+	mkdir -p $(BUILD_DIR)
+
+clean : clean_dist clean_build  
+
+clean_dist :
 	rm -f $(PROJ)
 
+clean_build :
+	rm -rf $(BUILD_DIR)
+
 $(BUILD_DIR)/%.o : %.cpp
-	mkdir -p $(BUILD_DIR)
-	@echo "Building $@"
 	$(CC) $(CFLAGS) -c $< -o $@
+
+
