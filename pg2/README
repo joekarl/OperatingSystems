@@ -1,0 +1,26 @@
+============= Build Instructions ============
+run make
+`make`
+
+This will build two executables: semaphore_server and semaphore_client
+
+============= Run Instructions =============
+You should run the semaphore server first 
+`semaphore_server <server_id> <initial semaphore count> <duration in seconds> [<client_id> .... <client_id>]`
+
+example 
+`semaphore_server 561 0 30 562 563 564 565`
+
+
+Once the server is running, it will wait until all child processes have been started
+To start a child process run the semaphore_client
+`semaphore_client <client_id>`
+
+example
+`semaphore_client 562`
+
+
+Once all clients are running, you will start seeing output until the duration time has passed and then each process will terminate.
+
+
+
