@@ -47,7 +47,7 @@ int main(int argc, char ** argv)
   gettimeofday(&time, NULL);
   while (running)
   {
-    usleep(100000 * (rand() % 5));
+    usleep(1000000 * (rand() % 5));
     
     message->client_id = (long)id;
     message->mType = kWait;
@@ -77,7 +77,7 @@ int main(int argc, char ** argv)
       break;
     }
    
-    usleep(100000 * (rand() % 5));
+    usleep(1000000 * (rand() % 5));
     message->client_id = (long)id;
     message->mType = kSignal;
     message->request_id = request_id;

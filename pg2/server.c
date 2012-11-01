@@ -114,7 +114,7 @@ int main(int argc, char** argv)
               semaphore++; 
               break;
             case kWait:
-              if (semaphore > 0)
+              if (semaphore >= 0)
               {
                 send_ack(client_queues[i], message, message->request_id, client_ids[i]);
                 semaphore--;
