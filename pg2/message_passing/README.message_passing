@@ -1,0 +1,22 @@
+============ How to Build ===========
+run the message passing makefile
+`make -f Makefile.message_passing`
+
+This will produce a mailbox executable
+
+============ How to Run ============
+`mailbox <max messages in queue buffer> <duration in seconds> <number of sender threads> <number of receiver threads>`
+
+example
+`mailbox 1 10 30 30`
+`mailbox 2 5 25 25`
+
+============ Useful info.... ==========
+If you pick different numbers for the sender and receiver threads, eventually you'll get to a state where the mailbox is either full (for sender threads) or empty (for receiver threads) and there aren't any other threads to unblock the threads in the send/receive queues. This is by design as per the assignment instructions.
+
+Also if you pick obscenely large numbers for threads, the system will stop giving you threads. In this case the program will try to retry a few times but will eventually give up and terminate. The program will tell you this has happened.
+
+As far as bugs, I had an issue with bad memory access causing segfaults, but that should be fixed.
+
+
+

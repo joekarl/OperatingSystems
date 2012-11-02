@@ -1,13 +1,13 @@
 
 
 APP = mailbox 
-SRCS = main.c 
+SRCS = mailbox.c 
 OBJS = $(SRCS:.c=.o)
 BUILD_OBJS = $(addprefix $(BUILD_DIR)/,$(OBJS))
 BUILD_DIR = build
 
 CC = gcc
-CFLAGS = -Wall -Werror -O3
+CFLAGS = -Wall -Werror -ggdb 
 LD = gcc
 LDFLAGS = -lpthread 
 

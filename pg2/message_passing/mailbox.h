@@ -3,30 +3,32 @@
 
 #include <pthread.h>
 
-typedef struct ThreadList
+typedef struct ThreadNode
 {
   pthread_t thread;
-  struct ThreadList* next;
-} ThreadList;
+  int *semaphore;
+  struct ThreadNode* next;
+} ThreadNode;
 
 typedef struct
 {
   long mId;
 } Message;
 
-typedef struct MessageList
+typedef struct MessageNode
 {
   Message* message;
-  struct MessageList* next;
-} MessageList;
+  struct MessageNode* next;
+} MessageNode;
 
 typedef struct
 {
+  int max_entries;
   int full_entries;
   int empty_entries;
-  ThreadList *send_queue;
-  ThreadList *receive_queue;
-  MessageList *message_queue;
+  ThreadNode *send_queue;
+  ThreadNode *receive_queue;
+  MessageNode *message_queue;
 } Mailbox;
 
 
